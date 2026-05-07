@@ -1,6 +1,7 @@
 import AdminLayout from '@/components/AdminLayout'
 import { createClient } from '@/lib/supabase/server'
 import { Package, ShoppingCart, DollarSign, AlertTriangle } from 'lucide-react'
+import Link from 'next/link'
 
 async function getStats() {
   const supabase = await createClient()
@@ -31,10 +32,10 @@ export default async function DashboardPage() {
   const { totalProducts, activeProducts, totalRevenue, pendingOrders, totalOrders, lowStockCount, recent } = await getStats()
 
   const stats = [
-    { label: 'Total Products', value: totalProducts, sub: `${activeProducts} active`, icon: Package, color: 'bg-blue-500' },
-    { label: 'Total Orders', value: totalOrders, sub: `${pendingOrders} pending`, icon: ShoppingCart, color: 'bg-green-500' },
-    { label: 'Total Revenue', value: `$${totalRevenue.toLocaleString('en', { minimumFractionDigits: 2 })}`, sub: 'All time', icon: DollarSign, color: 'bg-orange-500' },
-    { label: 'Low Stock Items', value: lowStockCount, sub: 'Need restocking', icon: AlertTriangle, color: 'bg-red-500' },
+    { label: 'Total Products', value: totalProducts, sub: `${activeProducts} active`, icon: Package, color: 'bg-blue-500', href: '/products' },
+    { label: 'Total Orders', value: totalOrders, sub: `${pendingOrders} pending`, icon: ShoppingCart, color: 'bg-green-500', href: '/orders' },
+    { label: 'Total Revenue', value: `$${totalRevenue.toLocaleString('en', { minimumFractionDigits: 2 })}`, sub: 'All time', icon: DollarSign, color: 'bg-orange-500', href: '/orders' },
+    { label: 'Low Stock Items', value: lowStockCount, sub: 'Need restocking', icon: AlertTriangle, color: 'bg-red-500', href: '/inventory' },
   ]
 
   return (
@@ -42,8 +43,8 @@ export default async function DashboardPage() {
       <div className="p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-          {stats.map(({ label, value, sub, icon: Icon, color }) => (
-            <div key={label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          {stats.map(({ label, value, sub, icon: Icon, color, href }) => (
+            <Link key={label} href={href} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-medium text-gray-500">{label}</span>
                 <div className={`${color} p-2 rounded-lg`}>
@@ -52,7 +53,7 @@ export default async function DashboardPage() {
               </div>
               <p className="text-3xl font-bold text-gray-900">{value}</p>
               <p className="text-sm text-gray-400 mt-1">{sub}</p>
-            </div>
+            </Link>
           ))}
         </div>
 
