@@ -21,16 +21,25 @@ export async function upsertProduct(formData: FormData) {
   const supabase = await createClient()
   const id = formData.get('id') as string | null
 
+  const num = (key: string, fallback: number) => {
+    const n = Number(formData.get(key))
+    return isFinite(n) ? n : fallback
+  }
+  const int = (key: string, fallback: number) => {
+    const n = Math.floor(Number(formData.get(key)))
+    return isFinite(n) ? n : fallback
+  }
+
   const payload = {
     name: formData.get('name') as string,
     sku: (formData.get('sku') as string) || generateSKU(),
     description: (formData.get('description') as string) || null,
-    cost: parseFloat(formData.get('cost') as string) || 0,
-    price: parseFloat(formData.get('price') as string) || 0,
-    sale_price: formData.get('sale_price') ? parseFloat(formData.get('sale_price') as string) : null,
+    cost: num('cost', 0),
+    price: num('price', 0),
+    sale_price: formData.get('sale_price') ? num('sale_price', 0) : null,
     category_id: (formData.get('category_id') as string) || null,
-    stock_quantity: parseInt(formData.get('stock_quantity') as string) || 0,
-    low_stock_threshold: parseInt(formData.get('low_stock_threshold') as string) || 5,
+    stock_quantity: int('stock_quantity', 0),
+    low_stock_threshold: int('low_stock_threshold', 5),
     is_active: formData.get('is_active') === 'true',
     image_url: (formData.get('image_url') as string) || null,
   }
