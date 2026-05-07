@@ -27,7 +27,9 @@ export async function updateSession(request: NextRequest) {
   const isAdminRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
     request.nextUrl.pathname.startsWith('/products') ||
     request.nextUrl.pathname.startsWith('/orders') ||
-    request.nextUrl.pathname.startsWith('/inventory')
+    request.nextUrl.pathname.startsWith('/inventory') ||
+    request.nextUrl.pathname.startsWith('/reports') ||
+    request.nextUrl.pathname.startsWith('/settings')
 
   if (isAdminRoute && !user) {
     const url = request.nextUrl.clone()

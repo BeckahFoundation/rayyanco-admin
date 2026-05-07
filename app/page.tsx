@@ -14,14 +14,18 @@ export default async function CatalogPage({
   const { category } = await searchParams
   const supabase = await createClient()
 
-  const [{ data: products }, { data: categories }] = await Promise.all([
-    supabase
-      .from('products')
-      .select('*, categories(name)')
-      .eq('is_active', true)
-      .order('name'),
+  const [{ data: products }, { data: categories }, { data: settingsRows }] = await Promise.all([
+    supabase.from('products').select('*, categories(name)').eq('is_active', true).order('name'),
     supabase.from('categories').select('*').order('name'),
+    supabase.from('settings').select('*'),
   ])
+
+  const s: Record<string, string> = {}
+  for (const row of settingsRows ?? []) s[row.key] = row.value
+  const email = s.contact_email || 'info@rayyanco.com'
+  const phone = s.contact_phone || ''
+  const companyName = s.company_name || 'Rayyanco LLC'
+  const tagline = s.company_tagline || 'Sauna Components'
 
   const filtered = category
     ? (products ?? []).filter((p: Product & { categories: { name: string } | null }) =>
@@ -37,14 +41,14 @@ export default async function CatalogPage({
           <div className="flex items-center gap-2">
             <Flame className="text-orange-400" size={24} />
             <div>
-              <span className="font-bold text-lg tracking-tight">Rayyanco LLC</span>
-              <span className="hidden sm:inline text-gray-400 text-sm ml-2">Sauna Components</span>
+              <span className="font-bold text-lg tracking-tight">{companyName}</span>
+              <span className="hidden sm:inline text-gray-400 text-sm ml-2">{tagline}</span>
             </div>
           </div>
           <div className="flex items-center gap-4 text-sm">
-            <a href="mailto:info@rayyanco.com" className="flex items-center gap-1.5 text-gray-300 hover:text-white transition-colors">
+            <a href={`mailto:${email}`} className="flex items-center gap-1.5 text-gray-300 hover:text-white transition-colors">
               <Mail size={15} />
-              <span className="hidden md:inline">info@rayyanco.com</span>
+              <span className="hidden md:inline">{email}</span>
             </a>
             <Link href="/login" className="text-gray-400 hover:text-white transition-colors text-xs">Admin</Link>
           </div>
@@ -109,18 +113,20 @@ export default async function CatalogPage({
           <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
           <p className="text-gray-400 mb-8">Questions about our products? We're here to help you build the perfect sauna.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="mailto:info@rayyanco.com" className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-8 py-3.5 rounded-full transition-colors">
-              <Mail size={18} /> Email Us
+            <a href={`mailto:${email}`} className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-8 py-3.5 rounded-full transition-colors">
+              <Mail size={18} /> {email}
             </a>
-            <a href="tel:+1234567890" className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-colors">
-              <Phone size={18} /> Call Us
-            </a>
+            {phone && (
+              <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-colors">
+                <Phone size={18} /> {phone}
+              </a>
+            )}
           </div>
         </div>
       </section>
 
       <footer className="bg-gray-950 text-gray-500 text-center text-sm py-6">
-        © {new Date().getFullYear()} Rayyanco LLC. All rights reserved.
+        © {new Date().getFullYear()} {companyName}. All rights reserved.
       </footer>
     </div>
   )
