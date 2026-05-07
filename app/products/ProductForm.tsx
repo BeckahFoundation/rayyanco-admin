@@ -49,14 +49,14 @@ export default function ProductForm({ product, categories }: Props) {
           <Field label="SKU (auto-generated if blank)" name="sku" defaultValue={product?.sku ?? ''} placeholder="e.g. RYC-ABC123" />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <select name="category_id" defaultValue={product?.category_id ?? ''} className={inputCls}>
+            <select name="category_id" defaultValue={product?.category_id ?? ''} className={inputCls + ' text-gray-900'}>
               <option value="">— None —</option>
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea name="description" defaultValue={product?.description ?? ''} rows={4} className={inputCls} />
+            <textarea name="description" defaultValue={product?.description ?? ''} rows={4} className={inputCls + ' text-gray-900'} />
           </div>
         </div>
 
@@ -101,7 +101,7 @@ export default function ProductForm({ product, categories }: Props) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select name="is_active" defaultValue={product?.is_active !== false ? 'true' : 'false'} className={inputCls}>
+            <select name="is_active" defaultValue={product?.is_active !== false ? 'true' : 'false'} className={inputCls + ' text-gray-900'}>
               <option value="true">Active</option>
               <option value="false">Inactive</option>
             </select>
@@ -121,7 +121,7 @@ export default function ProductForm({ product, categories }: Props) {
   )
 }
 
-const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500'
+const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500'
 
 function Field({ label, name, type = 'text', defaultValue, required, step, min, placeholder }: {
   label: string; name: string; type?: string; defaultValue?: string | number | null
