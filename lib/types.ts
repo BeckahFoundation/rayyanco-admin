@@ -9,6 +9,7 @@ export interface Product {
   name: string
   sku: string | null
   description: string | null
+  cost: number
   price: number
   sale_price: number | null
   category_id: string | null

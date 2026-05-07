@@ -11,14 +11,21 @@ export async function deleteProduct(formData: FormData) {
   revalidatePath('/products')
 }
 
+function generateSKU(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const rand = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+  return `RYC-${rand}`
+}
+
 export async function upsertProduct(formData: FormData) {
   const supabase = await createClient()
   const id = formData.get('id') as string | null
 
   const payload = {
     name: formData.get('name') as string,
-    sku: (formData.get('sku') as string) || null,
+    sku: (formData.get('sku') as string) || generateSKU(),
     description: (formData.get('description') as string) || null,
+    cost: parseFloat(formData.get('cost') as string) || 0,
     price: parseFloat(formData.get('price') as string) || 0,
     sale_price: formData.get('sale_price') ? parseFloat(formData.get('sale_price') as string) : null,
     category_id: (formData.get('category_id') as string) || null,

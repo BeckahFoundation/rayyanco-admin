@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Package, ShoppingCart, BarChart3, LogOut, Flame } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, BarChart3, TrendingUp, LogOut, Flame } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const nav = [
@@ -10,6 +10,7 @@ const nav = [
   { href: '/products', label: 'Products', icon: Package },
   { href: '/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/inventory', label: 'Inventory', icon: BarChart3 },
+  { href: '/reports', label: 'P&L Report', icon: TrendingUp },
 ]
 
 export default function Sidebar() {

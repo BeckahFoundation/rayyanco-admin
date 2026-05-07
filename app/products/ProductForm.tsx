@@ -46,7 +46,7 @@ export default function ProductForm({ product, categories }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <Field label="Product Name *" name="name" defaultValue={product?.name} required />
-          <Field label="SKU" name="sku" defaultValue={product?.sku ?? ''} />
+          <Field label="SKU (auto-generated if blank)" name="sku" defaultValue={product?.sku ?? ''} placeholder="e.g. RYC-ABC123" />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <select name="category_id" defaultValue={product?.category_id ?? ''} className={inputCls}>
@@ -90,7 +90,8 @@ export default function ProductForm({ product, categories }: Props) {
             {uploadError && <p className="text-red-500 text-xs mt-1">{uploadError}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Cost ($)" name="cost" type="number" step="0.01" min="0" defaultValue={(product as Product & { cost?: number })?.cost ?? ''} />
             <Field label="Price ($) *" name="price" type="number" step="0.01" min="0" defaultValue={product?.price ?? ''} required />
             <Field label="Sale Price ($)" name="sale_price" type="number" step="0.01" min="0" defaultValue={product?.sale_price ?? ''} />
           </div>
@@ -122,9 +123,9 @@ export default function ProductForm({ product, categories }: Props) {
 
 const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500'
 
-function Field({ label, name, type = 'text', defaultValue, required, step, min }: {
+function Field({ label, name, type = 'text', defaultValue, required, step, min, placeholder }: {
   label: string; name: string; type?: string; defaultValue?: string | number | null
-  required?: boolean; step?: string; min?: string
+  required?: boolean; step?: string; min?: string; placeholder?: string
 }) {
   return (
     <div>
@@ -132,7 +133,7 @@ function Field({ label, name, type = 'text', defaultValue, required, step, min }
       <input
         type={type} name={name}
         defaultValue={defaultValue ?? ''}
-        required={required} step={step} min={min}
+        required={required} step={step} min={min} placeholder={placeholder}
         className={inputCls}
       />
     </div>
