@@ -1,8 +1,9 @@
 import AdminLayout from '@/components/AdminLayout'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil } from 'lucide-react'
 import { deleteProduct } from './actions'
+import DeleteButton from '@/components/DeleteButton'
 import type { Product } from '@/lib/types'
 
 export default async function ProductsPage() {
@@ -80,13 +81,7 @@ export default async function ProductsPage() {
                         <Link href={`/products/${p.id}`} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 hover:text-gray-900">
                           <Pencil size={15} />
                         </Link>
-                        <form action={deleteProduct}>
-                          <input type="hidden" name="id" value={p.id} />
-                          <button type="submit" className="p-1.5 hover:bg-red-50 rounded-lg transition-colors text-gray-400 hover:text-red-600"
-                            onClick={e => { if (!confirm('Delete this product?')) e.preventDefault() }}>
-                            <Trash2 size={15} />
-                          </button>
-                        </form>
+                        <DeleteButton action={deleteProduct} id={p.id} />
                       </div>
                     </td>
                   </tr>

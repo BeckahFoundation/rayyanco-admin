@@ -1,8 +1,9 @@
 import AdminLayout from '@/components/AdminLayout'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Plus, Eye, Trash2 } from 'lucide-react'
+import { Plus, Eye } from 'lucide-react'
 import { deleteOrder } from './actions'
+import DeleteButton from '@/components/DeleteButton'
 import type { Order } from '@/lib/types'
 
 const statusColors: Record<string, string> = {
@@ -71,13 +72,7 @@ export default async function OrdersPage() {
                         <Link href={`/orders/${order.id}`} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 hover:text-gray-900">
                           <Eye size={15} />
                         </Link>
-                        <form action={deleteOrder}>
-                          <input type="hidden" name="id" value={order.id} />
-                          <button type="submit" className="p-1.5 hover:bg-red-50 rounded-lg transition-colors text-gray-400 hover:text-red-600"
-                            onClick={e => { if (!confirm('Delete this order?')) e.preventDefault() }}>
-                            <Trash2 size={15} />
-                          </button>
-                        </form>
+                        <DeleteButton action={deleteOrder} id={order.id} />
                       </div>
                     </td>
                   </tr>
