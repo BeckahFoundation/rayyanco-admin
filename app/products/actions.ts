@@ -42,6 +42,7 @@ export async function upsertProduct(formData: FormData) {
     low_stock_threshold: int('low_stock_threshold', 5),
     is_active: formData.get('is_active') === 'true',
     image_url: (formData.get('image_url') as string) || null,
+    image_urls: JSON.parse((formData.get('image_urls') as string) || '[]'),
   }
 
   if (id) {

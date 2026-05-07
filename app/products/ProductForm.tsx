@@ -7,41 +7,52 @@ import { upsertProduct } from './actions'
 import type { Category, Product } from '@/lib/types'
 import { Upload, X } from 'lucide-react'
 
+const MAX_IMAGES = 4
+
 interface Props {
-  product?: Product
+  product?: Product & { image_urls?: string[] }
   categories: Category[]
 }
 
 export default function ProductForm({ product, categories }: Props) {
   const router = useRouter()
-  const fileRef = useRef<HTMLInputElement>(null)
-  const formRef = useRef<HTMLFormElement>(null)
-  const [imageUrl, setImageUrl] = useState(product?.image_url ?? '')
-  const [uploading, setUploading] = useState(false)
-  const [uploadError, setUploadError] = useState('')
+  const fileRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)]
+  const [images, setImages] = useState<string[]>(() => {
+    const existing = product?.image_urls?.length ? product.image_urls : (product?.image_url ? [product.image_url] : [])
+    return [...existing, ...Array(MAX_IMAGES - existing.length).fill('')].slice(0, MAX_IMAGES)
+  })
+  const [uploading, setUploading] = useState<boolean[]>([false, false, false, false])
+  const [error, setError] = useState('')
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>, idx: number) {
     const file = e.target.files?.[0]
     if (!file) return
-    setUploading(true)
-    setUploadError('')
+    setUploading(prev => { const n = [...prev]; n[idx] = true; return n })
+    setError('')
     const supabase = createClient()
     const ext = file.name.split('.').pop()
-    const path = `products/${Date.now()}.${ext}`
-    const { error } = await supabase.storage.from('products').upload(path, file, { upsert: true })
-    if (error) {
-      setUploadError(error.message)
+    const path = `products/${Date.now()}-${idx}.${ext}`
+    const { error: err } = await supabase.storage.from('products').upload(path, file, { upsert: true })
+    if (err) {
+      setError(err.message)
     } else {
       const { data } = supabase.storage.from('products').getPublicUrl(path)
-      setImageUrl(data.publicUrl)
+      setImages(prev => { const n = [...prev]; n[idx] = data.publicUrl; return n })
     }
-    setUploading(false)
+    setUploading(prev => { const n = [...prev]; n[idx] = false; return n })
   }
 
+  function removeImage(idx: number) {
+    setImages(prev => { const n = [...prev]; n[idx] = ''; return n })
+  }
+
+  const filled = images.filter(Boolean)
+
   return (
-    <form ref={formRef} action={upsertProduct} className="space-y-6">
+    <form action={upsertProduct} className="space-y-6">
       {product && <input type="hidden" name="id" value={product.id} />}
-      <input type="hidden" name="image_url" value={imageUrl} />
+      <input type="hidden" name="image_url" value={images[0] ?? ''} />
+      <input type="hidden" name="image_urls" value={JSON.stringify(filled)} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
@@ -61,33 +72,37 @@ export default function ProductForm({ product, categories }: Props) {
         </div>
 
         <div className="space-y-4">
-          {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
-            <div
-              onClick={() => fileRef.current?.click()}
-              className="border-2 border-dashed border-gray-200 rounded-xl p-4 cursor-pointer hover:border-orange-400 transition-colors"
-            >
-              {imageUrl ? (
-                <div className="relative">
-                  <img src={imageUrl} alt="Preview" className="w-full h-40 object-cover rounded-lg" />
-                  <button
-                    type="button"
-                    onClick={e => { e.stopPropagation(); setImageUrl('') }}
-                    className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-red-50"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Product Images <span className="text-gray-400 font-normal">(up to 4)</span></label>
+            <div className="grid grid-cols-2 gap-2">
+              {images.map((url, idx) => (
+                <div key={idx}>
+                  <div
+                    onClick={() => fileRefs[idx].current?.click()}
+                    className={`border-2 border-dashed rounded-xl cursor-pointer transition-colors h-28 flex items-center justify-center overflow-hidden relative
+                      ${url ? 'border-orange-300' : 'border-gray-200 hover:border-orange-400'}`}
                   >
-                    <X size={14} className="text-red-500" />
-                  </button>
+                    {url ? (
+                      <>
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <button type="button" onClick={e => { e.stopPropagation(); removeImage(idx) }}
+                          className="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow hover:bg-red-50">
+                          <X size={12} className="text-red-500" />
+                        </button>
+                        {idx === 0 && <span className="absolute bottom-1 left-1 bg-orange-600 text-white text-xs px-1.5 py-0.5 rounded font-medium">Main</span>}
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center text-gray-300">
+                        <Upload size={20} className="mb-1" />
+                        <p className="text-xs">{uploading[idx] ? 'Uploading…' : idx === 0 ? 'Main photo' : `Photo ${idx + 1}`}</p>
+                      </div>
+                    )}
+                  </div>
+                  <input ref={fileRefs[idx]} type="file" accept="image/*" onChange={e => handleUpload(e, idx)} className="hidden" />
                 </div>
-              ) : (
-                <div className="flex flex-col items-center py-6 text-gray-400">
-                  <Upload size={24} className="mb-2" />
-                  <p className="text-sm">{uploading ? 'Uploading…' : 'Click to upload image'}</p>
-                </div>
-              )}
+              ))}
             </div>
-            <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            {uploadError && <p className="text-red-500 text-xs mt-1">{uploadError}</p>}
+            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
           </div>
 
           <div className="grid grid-cols-3 gap-3">
@@ -130,12 +145,7 @@ function Field({ label, name, type = 'text', defaultValue, required, step, min, 
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input
-        type={type} name={name}
-        defaultValue={defaultValue ?? ''}
-        required={required} step={step} min={min} placeholder={placeholder}
-        className={inputCls}
-      />
+      <input type={type} name={name} defaultValue={defaultValue ?? ''} required={required} step={step} min={min} placeholder={placeholder} className={inputCls} />
     </div>
   )
 }

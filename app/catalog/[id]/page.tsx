@@ -36,13 +36,24 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Image */}
-          <div className="aspect-square bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            {p.image_url ? (
-              <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <Flame className="text-orange-200" size={80} />
+          {/* Images */}
+          <div className="space-y-2">
+            <div className="aspect-square bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              {p.image_url ? (
+                <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Flame className="text-orange-200" size={80} />
+                </div>
+              )}
+            </div>
+            {p.image_urls?.length > 1 && (
+              <div className="grid grid-cols-3 gap-2">
+                {p.image_urls.slice(1).map((url: string, i: number) => (
+                  <div key={i} className="aspect-square bg-white rounded-xl border border-gray-100 overflow-hidden">
+                    <img src={url} alt={`${p.name} ${i + 2}`} className="w-full h-full object-cover" />
+                  </div>
+                ))}
               </div>
             )}
           </div>

@@ -14,6 +14,7 @@ export interface Product {
   sale_price: number | null
   category_id: string | null
   image_url: string | null
+  image_urls: string[]
   stock_quantity: number
   low_stock_threshold: number
   is_active: boolean
