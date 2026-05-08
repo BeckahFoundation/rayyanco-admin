@@ -1,9 +1,10 @@
 import AdminLayout from '@/components/AdminLayout'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Plus, Pencil } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { deleteProduct } from './actions'
 import DeleteButton from '@/components/DeleteButton'
+import ClickableRow from '@/components/ClickableRow'
 import type { Product } from '@/lib/types'
 
 export default async function ProductsPage() {
@@ -43,7 +44,7 @@ export default async function ProductsPage() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {(products ?? []).map((p: Product & { categories: { name: string } | null }) => (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                  <ClickableRow key={p.id} href={`/products/${p.id}`}>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {p.image_url ? (
@@ -59,12 +60,16 @@ export default async function ProductsPage() {
                     <td className="px-6 py-4 text-gray-500 font-mono text-xs">{p.sku ?? '—'}</td>
                     <td className="px-6 py-4 text-gray-500">{p.categories?.name ?? '—'}</td>
                     <td className="px-6 py-4 text-right">
-                      <div>
-                        <span className="font-semibold text-gray-900">${Number(p.price).toFixed(2)}</span>
-                        {p.sale_price && (
-                          <span className="ml-2 text-xs text-orange-600 font-medium">${Number(p.sale_price).toFixed(2)} sale</span>
-                        )}
-                      </div>
+                      {(p as any).price_on_request ? (
+                        <span className="text-xs font-medium text-orange-600">Upon request</span>
+                      ) : (
+                        <div>
+                          <span className="font-semibold text-gray-900">${Number(p.price).toFixed(2)}</span>
+                          {p.sale_price && (
+                            <span className="ml-2 text-xs text-orange-600 font-medium">${Number(p.sale_price).toFixed(2)} sale</span>
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <span className={`font-medium ${p.stock_quantity <= p.low_stock_threshold ? 'text-red-600' : 'text-gray-900'}`}>
@@ -77,14 +82,11 @@ export default async function ProductsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/products/${p.id}`} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 hover:text-gray-900">
-                          <Pencil size={15} />
-                        </Link>
+                      <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
                         <DeleteButton action={deleteProduct} id={p.id} />
                       </div>
                     </td>
-                  </tr>
+                  </ClickableRow>
                 ))}
                 {!products?.length && (
                   <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-400">No products yet. <Link href="/products/new" className="text-orange-600 hover:underline">Add one</Link>.</td></tr>
