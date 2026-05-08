@@ -9,13 +9,19 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: product }, { data: categories }, { data: orderItems }] = await Promise.all([
+  const [{ data: product }, { data: categories }] = await Promise.all([
     supabase.from('products').select('*').eq('id', id).single(),
     supabase.from('categories').select('*').order('name'),
-    supabase.from('order_items').select('*, orders(id, order_number, status, created_at, customer_name)').eq('product_id', id).order('created_at', { ascending: false }).limit(20),
   ])
 
   if (!product) notFound()
+
+  const { data: orderItems } = await supabase
+    .from('order_items')
+    .select('id, quantity, unit_price, order_id, orders(id, order_number, status, created_at, customer_name)')
+    .eq('product_id', id)
+    .order('created_at', { ascending: false })
+    .limit(20)
 
   const totalUnits = (orderItems ?? []).reduce((s: number, i: any) => s + i.quantity, 0)
   const totalRevenue = (orderItems ?? []).reduce((s: number, i: any) => s + i.quantity * i.unit_price, 0)
@@ -64,14 +70,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <p className="text-sm text-gray-400 text-center py-4">No orders yet</p>
               ) : (
                 <div className="space-y-3">
-                  {(orderItems ?? []).map((item: any) => (
+                  {(orderItems ?? []).map((item: any) => {
+                    const order = Array.isArray(item.orders) ? item.orders[0] : item.orders
+                    return (
                     <div key={item.id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
                       <div className="flex justify-between items-start">
                         <div>
-                          <Link href={`/orders/${item.orders?.id ?? ''}`} className="text-sm font-medium text-orange-600 hover:underline">
-                            #{item.orders?.order_number}
+                          <Link href={`/orders/${order?.id ?? ''}`} className="text-sm font-medium text-orange-600 hover:underline">
+                            #{order?.order_number ?? '—'}
                           </Link>
-                          <p className="text-xs text-gray-500 mt-0.5">{item.orders?.customer_name}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{order?.customer_name}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-semibold text-gray-900">×{item.quantity}</p>
@@ -80,14 +88,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                       </div>
                       <div className="flex justify-between mt-1">
                         <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                          item.orders?.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                          item.orders?.status === 'cancelled' ? 'bg-red-100 text-red-600' :
+                          order?.status === 'delivered' ? 'bg-green-100 text-green-700' :
+                          order?.status === 'cancelled' ? 'bg-red-100 text-red-600' :
                           'bg-orange-100 text-orange-700'
-                        }`}>{item.orders?.status}</span>
-                        <span className="text-xs text-gray-400">{new Date(item.orders?.created_at).toLocaleDateString()}</span>
+                        }`}>{order?.status ?? '—'}</span>
+                        <span className="text-xs text-gray-400">{order?.created_at ? new Date(order.created_at).toLocaleDateString() : ''}</span>
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
