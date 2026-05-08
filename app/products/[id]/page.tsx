@@ -16,15 +16,24 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   if (!product) notFound()
 
-  const { data: orderItems } = await supabase
+  const { data: rawItems } = await supabase
     .from('order_items')
-    .select('id, quantity, unit_price, order_id, orders(id, order_number, status, created_at, customer_name)')
+    .select('id, quantity, unit_price, order_id')
     .eq('product_id', id)
     .order('created_at', { ascending: false })
     .limit(20)
 
-  const totalUnits = (orderItems ?? []).reduce((s: number, i: any) => s + i.quantity, 0)
-  const totalRevenue = (orderItems ?? []).reduce((s: number, i: any) => s + i.quantity * i.unit_price, 0)
+  const orderIds = (rawItems ?? []).map((i: any) => i.order_id).filter(Boolean)
+  const { data: orders } = orderIds.length
+    ? await supabase.from('orders').select('id, order_number, status, created_at, customer_name').in('id', orderIds)
+    : { data: [] }
+
+  const ordersMap: Record<string, any> = {}
+  for (const o of orders ?? []) ordersMap[o.id] = o
+
+  const orderItems = (rawItems ?? []).map((i: any) => ({ ...i, order: ordersMap[i.order_id] ?? null }))
+  const totalUnits = orderItems.reduce((s, i: any) => s + i.quantity, 0)
+  const totalRevenue = orderItems.reduce((s, i: any) => s + i.quantity * i.unit_price, 0)
 
   return (
     <AdminLayout>
@@ -66,12 +75,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <ShoppingCart size={16} className="text-gray-400" /> Order History
               </h2>
-              {(orderItems ?? []).length === 0 ? (
+              {orderItems.length === 0 ? (
                 <p className="text-sm text-gray-400 text-center py-4">No orders yet</p>
               ) : (
                 <div className="space-y-3">
-                  {(orderItems ?? []).map((item: any) => {
-                    const order = Array.isArray(item.orders) ? item.orders[0] : item.orders
+                  {orderItems.map((item: any) => {
+                    const order = item.order
                     return (
                     <div key={item.id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
                       <div className="flex justify-between items-start">
