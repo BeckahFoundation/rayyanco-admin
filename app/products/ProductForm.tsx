@@ -105,9 +105,13 @@ export default function ProductForm({ product, categories }: Props) {
             {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
           </div>
 
+          <div className="flex items-center gap-3 pb-1">
+            <input type="checkbox" id="price_on_request" name="price_on_request" value="true" defaultChecked={!!(product as any)?.price_on_request} className="w-4 h-4 accent-orange-600" />
+            <label htmlFor="price_on_request" className="text-sm font-medium text-gray-700">Price available upon request</label>
+          </div>
           <div className="grid grid-cols-3 gap-3">
             <Field label="Cost ($)" name="cost" type="number" step="0.01" min="0" defaultValue={(product as Product & { cost?: number })?.cost ?? ''} />
-            <Field label="Price ($) *" name="price" type="number" step="0.01" min="0" defaultValue={product?.price ?? ''} required />
+            <Field label="Price ($)" name="price" type="number" step="0.01" min="0" defaultValue={product?.price ?? ''} />
             <Field label="Sale Price ($)" name="sale_price" type="number" step="0.01" min="0" defaultValue={product?.sale_price ?? ''} />
           </div>
           <div className="grid grid-cols-2 gap-4">

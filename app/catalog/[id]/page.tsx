@@ -51,15 +51,21 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <h1 className="text-3xl font-bold text-gray-900 mb-4">{p.name}</h1>
 
             <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-4xl font-bold text-gray-900">
-                ${Number(hasDiscount ? p.sale_price : p.price).toFixed(2)}
-              </span>
-              {hasDiscount && (
+              {p.price_on_request ? (
+                <span className="text-2xl font-semibold text-orange-600">Price available upon request</span>
+              ) : (
                 <>
-                  <span className="text-xl text-gray-400 line-through">${Number(p.price).toFixed(2)}</span>
-                  <span className="bg-orange-100 text-orange-700 text-sm font-semibold px-2 py-0.5 rounded-full">
-                    Save ${(Number(p.price) - Number(p.sale_price)).toFixed(2)}
+                  <span className="text-4xl font-bold text-gray-900">
+                    ${Number(hasDiscount ? p.sale_price : p.price).toFixed(2)}
                   </span>
+                  {hasDiscount && (
+                    <>
+                      <span className="text-xl text-gray-400 line-through">${Number(p.price).toFixed(2)}</span>
+                      <span className="bg-orange-100 text-orange-700 text-sm font-semibold px-2 py-0.5 rounded-full">
+                        Save ${(Number(p.price) - Number(p.sale_price)).toFixed(2)}
+                      </span>
+                    </>
+                  )}
                 </>
               )}
             </div>

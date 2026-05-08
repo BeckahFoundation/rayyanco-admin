@@ -151,11 +151,17 @@ function ProductCard({ product: p }: { product: Product & { categories: { name: 
         )}
         <h3 className="font-semibold text-gray-900 mt-1 mb-2 line-clamp-2">{p.name}</h3>
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-gray-900">
-            ${Number(hasDiscount ? p.sale_price : p.price).toFixed(2)}
-          </span>
-          {hasDiscount && (
-            <span className="text-sm text-gray-400 line-through">${Number(p.price).toFixed(2)}</span>
+          {p.price_on_request ? (
+            <span className="text-sm font-semibold text-orange-600">Price upon request</span>
+          ) : (
+            <>
+              <span className="text-lg font-bold text-gray-900">
+                ${Number(hasDiscount ? p.sale_price : p.price).toFixed(2)}
+              </span>
+              {hasDiscount && (
+                <span className="text-sm text-gray-400 line-through">${Number(p.price).toFixed(2)}</span>
+              )}
+            </>
           )}
         </div>
         {p.stock_quantity === 0 && (

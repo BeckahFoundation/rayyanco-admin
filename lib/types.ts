@@ -12,6 +12,7 @@ export interface Product {
   cost: number
   price: number
   sale_price: number | null
+  price_on_request: boolean
   category_id: string | null
   image_url: string | null
   image_urls: string[]
