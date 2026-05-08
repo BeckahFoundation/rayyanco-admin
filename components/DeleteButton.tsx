@@ -4,7 +4,7 @@ import { Trash2 } from 'lucide-react'
 
 export default function DeleteButton({ action, id }: { action: (f: FormData) => Promise<void>; id: string }) {
   return (
-    <form action={action}>
+    <form action={action} onClick={e => e.stopPropagation()}>
       <input type="hidden" name="id" value={id} />
       <button
         type="submit"

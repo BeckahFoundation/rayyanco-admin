@@ -81,10 +81,8 @@ export default async function ProductsPage() {
                         {p.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
-                        <DeleteButton action={deleteProduct} id={p.id} />
-                      </div>
+                    <td className="px-6 py-4 text-right">
+                      <DeleteButton action={deleteProduct} id={p.id} />
                     </td>
                   </ClickableRow>
                 ))}
