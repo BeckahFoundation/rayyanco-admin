@@ -21,14 +21,14 @@ export default async function SettingsPage() {
             <div className="pb-4 border-b border-gray-100">
               <h2 className="font-semibold text-gray-700 mb-4">Company Info</h2>
               <div className="space-y-4">
-                <Field label="Company Name" name="company_name" defaultValue={s.company_name ?? 'Rayyanco LLC'} />
+                <Field label="Company Name" name="company_name" defaultValue={s.company_name ?? 'Hydro Heat'} />
                 <Field label="Tagline" name="company_tagline" defaultValue={s.company_tagline ?? 'Sauna Components'} />
               </div>
             </div>
             <div className="pt-1">
               <h2 className="font-semibold text-gray-700 mb-4">Contact Information</h2>
               <div className="space-y-4">
-                <Field label="Email Address" name="contact_email" type="email" defaultValue={s.contact_email ?? ''} placeholder="info@rayyanco.com" />
+                <Field label="Email Address" name="contact_email" type="email" defaultValue={s.contact_email ?? ''} placeholder="info@hydroheat.com" />
                 <Field label="Phone Number" name="contact_phone" defaultValue={s.contact_phone ?? ''} placeholder="+1 (555) 000-0000" />
               </div>
             </div>

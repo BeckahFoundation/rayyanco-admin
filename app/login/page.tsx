@@ -34,7 +34,7 @@ export default function LoginPage() {
           <div className="bg-orange-100 p-3 rounded-full mb-3">
             <Flame className="text-orange-500" size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Rayyanco LLC</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Hydro Heat</h1>
           <p className="text-gray-500 text-sm mt-1">Admin Dashboard</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -46,7 +46,7 @@ export default function LoginPage() {
               onChange={e => setEmail(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="admin@rayyanco.com"
+              placeholder="admin@hydroheat.com"
             />
           </div>
           <div>

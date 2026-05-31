@@ -1,4 +1,4 @@
-# Rayyanco LLC — Admin Setup Guide
+# Hydro Heat — Admin Setup Guide
 
 ## 1. Supabase Project
 

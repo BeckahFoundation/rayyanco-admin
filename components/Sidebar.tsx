@@ -30,7 +30,7 @@ export default function Sidebar() {
         <div className="flex items-center gap-2">
           <Flame className="text-orange-400" size={24} />
           <div>
-            <p className="font-bold text-sm">Rayyanco LLC</p>
+            <p className="font-bold text-sm">Hydro Heat</p>
             <p className="text-gray-400 text-xs">Admin Dashboard</p>
           </div>
         </div>

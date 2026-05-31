@@ -22,9 +22,9 @@ export default async function CatalogPage({
 
   const s: Record<string, string> = {}
   for (const row of settingsRows ?? []) s[row.key] = row.value
-  const email = s.contact_email || 'info@rayyanco.com'
+  const email = s.contact_email || 'info@hydroheat.com'
   const phone = s.contact_phone || ''
-  const companyName = s.company_name || 'Rayyanco LLC'
+  const companyName = s.company_name || 'Hydro Heat'
   const tagline = s.company_tagline || 'Sauna Components'
 
   const filtered = category
