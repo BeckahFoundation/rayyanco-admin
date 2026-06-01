@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Flame, ArrowLeft, Mail, Phone, Tag, Package } from 'lucide-react'
+import { Flame, ArrowLeft, Phone, Tag, Package } from 'lucide-react'
 import ProductGallery from '@/components/ProductGallery'
+import InquiryForm from '@/components/InquiryForm'
 
 export const revalidate = 60
 
@@ -20,7 +21,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const s: Record<string, string> = {}
   for (const row of settingsRows ?? []) s[row.key] = row.value
 
-  const email = s.contact_email || 'info@hydroheat.com'
   const phone = s.contact_phone || ''
   const companyName = s.company_name || 'Hydro Heat'
   const hasDiscount = p.sale_price && p.sale_price < p.price
@@ -88,12 +88,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             <div className="bg-orange-50 rounded-2xl p-6 border border-orange-100">
               <p className="font-semibold text-gray-900 mb-1">Interested in this product?</p>
-              <p className="text-sm text-gray-500 mb-4">Contact us to place an order or ask a question.</p>
+              <p className="text-sm text-gray-500 mb-4">Tell us about your needs and we&apos;ll send pricing and availability.</p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href={`mailto:${email}?subject=Inquiry: ${encodeURIComponent(p.name)}`}
-                  className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm">
-                  <Mail size={16} /> Email Inquiry
-                </a>
+                <InquiryForm productId={p.id} productName={p.name} />
                 {phone && (
                   <a href={`tel:${phone.replace(/\s/g, '')}`}
                     className="flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold px-6 py-3 rounded-xl border border-gray-200 transition-colors text-sm">

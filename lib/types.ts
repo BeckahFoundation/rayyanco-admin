@@ -50,3 +50,21 @@ export interface OrderItem {
 }
 
 export type OrderStatus = Order['status']
+
+export interface Inquiry {
+  id: string
+  product_id: string | null
+  product_name: string | null
+  name: string
+  email: string
+  phone: string | null
+  company: string | null
+  quantity: string | null
+  message: string | null
+  status: 'new' | 'contacted' | 'quoted' | 'closed'
+  admin_notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type InquiryStatus = Inquiry['status']

@@ -14,7 +14,7 @@ export async function deleteProduct(formData: FormData) {
 function generateSKU(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   const rand = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
-  return `RYC-${rand}`
+  return `HH-${rand}`
 }
 
 export async function upsertProduct(formData: FormData) {
