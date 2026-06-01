@@ -28,7 +28,7 @@ export default async function SettingsPage() {
             <div className="pt-1">
               <h2 className="font-semibold text-gray-700 mb-4">Contact Information</h2>
               <div className="space-y-4">
-                <Field label="Email Address" name="contact_email" type="email" defaultValue={s.contact_email ?? ''} placeholder="info@hydroheat.com" />
+                <Field label="Email Address" name="contact_email" type="email" defaultValue={s.contact_email ?? ''} placeholder="info@hydroheatco.com" />
                 <Field label="Phone Number" name="contact_phone" defaultValue={s.contact_phone ?? ''} placeholder="+1 (555) 000-0000" />
               </div>
             </div>
